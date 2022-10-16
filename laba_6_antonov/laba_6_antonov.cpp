@@ -191,8 +191,28 @@ int main() {
 
 	int rank, size, limit, end, end_1_otprav = 0, end_1_priem = 0, h = 0, g = 0;
 	end = 0;
+	int list_a[2] = { 0, 1 };
+	int list_b[3] = { 0, 2 ,3 };
+
+	int size_list_a = sizeof(list_a) / sizeof(int);
+	int size_list_b = sizeof(list_b) / sizeof(int);
+
+
+	MPI_Group MPI_GROUP_WORLD, group_a, group_b;
+	MPI_Comm comm_a, comm_b;
+
+	MPI_Comm_group(MPI_COMM_WORLD, &MPI_GROUP_WORLD);
+	//MPI_Comm_create(MPI_COMM_WORLD, Group, &subComm1);
+	//MPI_Comm_create(MPI_COMM_WORLD, Group, &subComm2);
+
+	MPI_Group_incl(MPI_GROUP_WORLD, size_list_a, list_a, &group_a);
+	MPI_Group_incl(MPI_GROUP_WORLD, size_list_b, list_b, &group_b);
+
+	MPI_Comm_create(MPI_COMM_WORLD, group_a, &comm_a);
+	MPI_Comm_create(MPI_COMM_WORLD, group_b, &comm_b);
 
 	MPI_Status status;
+	//MPI_Comm_split(MPI_COMM_WORLD, rank / 2, rank % 2, &subComm1);
 	//MPI_Request request;
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
