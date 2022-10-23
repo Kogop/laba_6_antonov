@@ -183,7 +183,7 @@ int N = 0, M = 0, Nn = 0, Mm = 0, limit_1 = 0;
 
 
 
-// make matrix multiplying with MPI_Reduce or MPI_AllReduce 
+// make matrix multiplying with MPI_Reduce or MPI_AllReduce
 int main() {
 	MPI_Init(NULL, NULL);
 	double starttime, endtime;
@@ -191,22 +191,25 @@ int main() {
 
 	int rank, size, limit, end, end_1_otprav = 0, end_1_priem = 0, h = 0, g = 0;
 	end = 0;
-	int list_a[2] = { 0, 1 };
-	int list_b[3] = { 0, 2 ,3 };
+	int my_rank_in_first_row, my_rank_in_second_row;
+	int row_size;
+	int* process_ranks;
 
-	int size_list_a = sizeof(list_a) / sizeof(int);
-	int size_list_b = sizeof(list_b) / sizeof(int);
+	process_ranks = (int*)malloc(n * sizeof(int));
+	for (int proc = 0; proc < n; proc++) {
+		process_ranks[proc] = proc;
+	}
 
-
-	MPI_Group MPI_GROUP_WORLD, group_a, group_b;
+	MPI_Group MPI_GROUP_WORLD;
+	MPI_Group group_a, group_b;
 	MPI_Comm comm_a, comm_b;
 
 	MPI_Comm_group(MPI_COMM_WORLD, &MPI_GROUP_WORLD);
 	//MPI_Comm_create(MPI_COMM_WORLD, Group, &subComm1);
 	//MPI_Comm_create(MPI_COMM_WORLD, Group, &subComm2);
 
-	MPI_Group_incl(MPI_GROUP_WORLD, size_list_a, list_a, &group_a);
-	MPI_Group_incl(MPI_GROUP_WORLD, size_list_b, list_b, &group_b);
+	MPI_Group_incl(MPI_GROUP_WORLD, n, process_ranks, &group_a);
+	MPI_Group_incl(MPI_GROUP_WORLD, n, process_ranks, &group_b);
 
 	MPI_Comm_create(MPI_COMM_WORLD, group_a, &comm_a);
 	MPI_Comm_create(MPI_COMM_WORLD, group_b, &comm_b);
@@ -217,8 +220,11 @@ int main() {
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+	//if (rank < n/2) {
+	//    MPI_Comm_rank(comm_a, &my_rank_in_first_row);
+	//}else{MPI_Comm_rank(comm_b, &my_rank_in_second_row);}
 
-	if (rank == 0) {
+	if (my_rank_in_first_row == 0) {
 		FillMatrix(A, B);
 		//FillVector(v);
 		Zapis_v_File();
@@ -228,24 +234,24 @@ int main() {
 
 	double  rbufA[m], rbufB[m]; int gsize; double buff[1000];
 	MPI_Comm_size(MPI_COMM_WORLD, &gsize);
-	MPI_Bcast(B1, n * m, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	MPI_Bcast(A1, n * m, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	MPI_Bcast(B1, n * m, MPI_DOUBLE, 0, comm_a);
+	MPI_Bcast(A1, n * m, MPI_DOUBLE, 0, comm_a);
 
 	for (size_t i = 0; i < n; i++)
 	{
 		vzat_vector_iz_matrix(A1, i, 1);
-		MPI_Scatter(k, 1, MPI_DOUBLE, rbufA, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+		MPI_Scatter(k, 1, MPI_DOUBLE, rbufA, 1, MPI_DOUBLE, 0, comm_a);
 		for (size_t j = 0; j < m; j++)
 		{
 			vzat_vector_iz_matrix(B1, j, 2);
-			MPI_Scatter(l, 1, MPI_DOUBLE, rbufB, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+			MPI_Scatter(l, 1, MPI_DOUBLE, rbufB, 1, MPI_DOUBLE, 0, comm_a);
 			Temp[0] = rbufA[0] * rbufB[0];
-			cout << rbufA[0] << " " << rbufB[0] << " " << rank << endl;
-			MPI_Reduce(Temp, buff, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+			//cout << rbufA[0] << " " << rbufB[0] << " " << rank << endl;
+			MPI_Reduce(Temp, buff, 1, MPI_DOUBLE, MPI_SUM, 0, comm_a);
 			//cout << buff[0] << " " << rank << endl;
 			if (rank == 0)
 			{
-				cout << buff[0] << " " << rank << endl;
+				//cout << buff[0] << " " << rank << endl;
 				C[i][j] = buff[0];
 			}
 
