@@ -55,7 +55,7 @@ void Matrix_Peremnoj_na_vector(double(&AA)[n][m], double(&vv)[n]) {
 
 
 void Zapis_v_File() {
-	ofstream File1("C:/Users/neste/source/Repos/laba5_Antonov/Matrix_1.txt");
+	ofstream File1("C:/Users/neste/source/Repos/laba_6_antonov/Matrix_1.txt");
 	for (int i = 0; i < n; i++)
 	{
 		for (int j = 0; j < m; j++) {
@@ -65,7 +65,7 @@ void Zapis_v_File() {
 	}
 	File1.close();
 
-	ofstream File2("C:/Users/neste/source/Repos/laba5_Antonov/Matrix_2.txt");
+	ofstream File2("C:/Users/neste/source/Repos/laba_6_antonov/Matrix_2.txt");
 	for (int i = 0; i < m; i++)
 	{
 		for (int j = 0; j < n; j++) {
@@ -75,7 +75,7 @@ void Zapis_v_File() {
 	}
 	File2.close();
 
-	ofstream File4("C:/Users/neste/source/Repos/laba5_Antonov/Vector_1.txt");
+	ofstream File4("C:/Users/neste/source/Repos/laba_6_antonov/Vector_1.txt");
 	for (int i = 0; i < n; i++)
 	{
 		File4 << v[i] << endl;
@@ -84,7 +84,7 @@ void Zapis_v_File() {
 }
 
 void Zapix_otvetov_v_File(double(&CC)[n][n]/*,double(&d)[n]*/) {
-	ofstream File3("C:/Users/neste/source/Repos/laba5_Antonov/Matrix_Otvet1.txt");
+	ofstream File3("C:/Users/neste/source/Repos/laba_6_antonov/Matrix_Otvet1.txt");
 	for (int i = 0; i < n; i++)
 	{
 		for (int j = 0; j < n; j++) {
@@ -111,7 +111,7 @@ void Zapix_otvetov_v_File(double(&CC)[n][n]/*,double(&d)[n]*/) {
 }
 
 void read_Vector() {
-	ifstream File5("C:/Users/neste/source/Repos/laba5_Antonov/Vector_1.txt");
+	ifstream File5("C:/Users/neste/source/Repos/laba_6_antonov/Vector_1.txt");
 	for (int i = 0; i < n; i++) {
 		File5 >> v1[i];
 		//  cout << DD[i]<<endl;
@@ -120,7 +120,7 @@ void read_Vector() {
 }
 
 void read_Matrix() {
-	ifstream File1("C:/Users/neste/source/Repos/laba5_Antonov/Matrix_1.txt");
+	ifstream File1("C:/Users/neste/source/Repos/laba_6_antonov/Matrix_1.txt");
 	for (int i = 0; i < n; i++)
 	{
 		for (int j = 0; j < m; j++) {
@@ -131,7 +131,7 @@ void read_Matrix() {
 	}
 	File1.close();
 
-	ifstream File2("C:/Users/neste/source/Repos/laba5_Antonov/Matrix_2.txt");
+	ifstream File2("C:/Users/neste/source/Repos/laba_6_antonov/Matrix_2.txt");
 	for (int i = 0; i < m; i++)
 	{
 		for (int j = 0; j < n; j++) {
@@ -207,8 +207,8 @@ int main() {
 
 
 
-	cout << " ya der'mo" << endl;
-	MPI_Barrier(MPI_COMM_WORLD);
+	//cout << " ya der'mo" << endl;
+	//MPI_Barrier(MPI_COMM_WORLD);
 
 
 
