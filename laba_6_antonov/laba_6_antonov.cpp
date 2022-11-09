@@ -189,67 +189,78 @@ int main() {
 	double starttime, endtime;
 	starttime = MPI_Wtime();
 
-	int rank, size, limit, end, end_1_otprav = 0, end_1_priem = 0, h = 0, g = 0;
+	int rank, ranka, rankb, size, limit, end, end_1_otprav = 0, end_1_priem = 0, h = 0, g = 0;
 	end = 0;
 	int my_rank_in_first_row, my_rank_in_second_row;
-	int row_size;
-	int* process_ranks;
 
-	process_ranks = (int*)malloc(n * sizeof(int));
-	for (int proc = 0; proc < n; proc++) {
-		process_ranks[proc] = proc;
-	}
+	int world_rank, world_size;
+	MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+	MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+	int color = world_rank / 4;
 
-	MPI_Group MPI_GROUP_WORLD;
-	MPI_Group group_a, group_b;
-	MPI_Comm comm_a, comm_b;
+	MPI_Comm row_comm;
+	MPI_Comm_split(MPI_COMM_WORLD, color, world_rank, &row_comm);
 
-	MPI_Comm_group(MPI_COMM_WORLD, &MPI_GROUP_WORLD);
-	//MPI_Comm_create(MPI_COMM_WORLD, Group, &subComm1);
-	//MPI_Comm_create(MPI_COMM_WORLD, Group, &subComm2);
+	int row_rank, row_size;
+	MPI_Comm_rank(row_comm, &row_rank);
+	MPI_Comm_size(row_comm, &row_size);
 
-	MPI_Group_incl(MPI_GROUP_WORLD, n, process_ranks, &group_a);
-	MPI_Group_incl(MPI_GROUP_WORLD, n, process_ranks, &group_b);
 
-	MPI_Comm_create(MPI_COMM_WORLD, group_a, &comm_a);
-	MPI_Comm_create(MPI_COMM_WORLD, group_b, &comm_b);
 
-	MPI_Status status;
-	//MPI_Comm_split(MPI_COMM_WORLD, rank / 2, rank % 2, &subComm1);
-	//MPI_Request request;
-	MPI_Comm_size(MPI_COMM_WORLD, &size);
-	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	cout << " ya der'mo" << endl;
+	MPI_Barrier(MPI_COMM_WORLD);
 
-	//if (rank < n/2) {
-	//    MPI_Comm_rank(comm_a, &my_rank_in_first_row);
-	//}else{MPI_Comm_rank(comm_b, &my_rank_in_second_row);}
 
-	if (my_rank_in_first_row == 0) {
+
+
+	if (row_rank == 0) {
 		FillMatrix(A, B);
 		//FillVector(v);
 		Zapis_v_File();
 		//read_Vector();
 		read_Matrix();
 	}
-
-	double  rbufA[m], rbufB[m]; int gsize; double buff[1000];
-	MPI_Comm_size(MPI_COMM_WORLD, &gsize);
-	MPI_Bcast(B1, n * m, MPI_DOUBLE, 0, comm_a);
-	MPI_Bcast(A1, n * m, MPI_DOUBLE, 0, comm_a);
+	/*if (rank == 1) {
+		FillMatrix(A, B);
+		//FillVector(v);
+		Zapis_v_File();
+		//read_Vector();
+		read_Matrix();
+	}*/
+	//
+	double  rbufA[m], rbufB[m]; int gsize; int asize; int bsize; double buff[1000];
+	//MPI_Comm_size(MPI_COMM_WORLD, &gsize);
+	MPI_Bcast(B1, n * m, MPI_DOUBLE, 0, row_comm);
+	MPI_Bcast(A1, n * m, MPI_DOUBLE, 0, row_comm);
+	/*MPI_Bcast(B1, n * m, MPI_DOUBLE, 0, comm_b);
+	MPI_Bcast(A1, n * m, MPI_DOUBLE, 0, comm_b);*/
 
 	for (size_t i = 0; i < n; i++)
 	{
 		vzat_vector_iz_matrix(A1, i, 1);
-		MPI_Scatter(k, 1, MPI_DOUBLE, rbufA, 1, MPI_DOUBLE, 0, comm_a);
+		//if (i % 2 == 0){
+		//cout << "jopa" <<endl;
+		MPI_Scatter(k, 1, MPI_DOUBLE, rbufA, 1, MPI_DOUBLE, 0, row_comm);
+		//}else{
+		//MPI_Scatter(k, 1, MPI_DOUBLE, rbufA, 1, MPI_DOUBLE, 1, comm_b);
+		//}
 		for (size_t j = 0; j < m; j++)
 		{
 			vzat_vector_iz_matrix(B1, j, 2);
-			MPI_Scatter(l, 1, MPI_DOUBLE, rbufB, 1, MPI_DOUBLE, 0, comm_a);
+			//if (i % 2 == 0){
+			MPI_Scatter(l, 1, MPI_DOUBLE, rbufB, 1, MPI_DOUBLE, 0, row_comm);
+			//}else {
+			//MPI_Scatter(l, 1, MPI_DOUBLE, rbufB, 1, MPI_DOUBLE, 1, comm_b);
+			//}
 			Temp[0] = rbufA[0] * rbufB[0];
 			//cout << rbufA[0] << " " << rbufB[0] << " " << rank << endl;
-			MPI_Reduce(Temp, buff, 1, MPI_DOUBLE, MPI_SUM, 0, comm_a);
+			//if (i % 2 == 0){
+			MPI_Reduce(Temp, buff, 1, MPI_DOUBLE, MPI_SUM, 0, row_comm);
+			//}else{
+			//MPI_Reduce(Temp, buff, 1, MPI_DOUBLE, MPI_SUM, 1, comm_b);
+			//}
 			//cout << buff[0] << " " << rank << endl;
-			if (rank == 0)
+			if (row_rank == 0)
 			{
 				//cout << buff[0] << " " << rank << endl;
 				C[i][j] = buff[0];
@@ -258,12 +269,13 @@ int main() {
 			fflush(stdout);
 		}
 	}
-	if (rank == 0) {
+	if (row_rank == 0) {
 		Zapix_otvetov_v_File(C/*,d*/);
 	}
 
 	endtime = MPI_Wtime();
 	printf("vipolnenie zanyalo %f seconds\n", endtime - starttime);
+	MPI_Comm_free(&row_comm);
 	MPI_Finalize();
 	//MPI_Finalize();
 	return 1;
