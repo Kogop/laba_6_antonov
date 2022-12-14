@@ -8,7 +8,7 @@
 using namespace std;
 
 const int root = 0, tag = 0;
-const int n = 401, m = 400;
+const int n = 4000, m = 4000;
 double A[n][m], B[m][n], v[n], d[n], C[n][n], A1[n][m], B1[m][n], v1[n];
 
 void FillMatrix(double(&AA)[n][m], double(&BB)[m][n]) {
@@ -210,8 +210,9 @@ int main() {
 	MPI_Comm_rank(row_comm, &row_rank);
 	MPI_Comm_size(row_comm, &row_size);
 
-
-
+	
+	int nmin = 0, nextra = 0;
+	
 	//cout << " ya der'mo" << endl;
 	//MPI_Barrier(MPI_COMM_WORLD);
 
@@ -219,9 +220,10 @@ int main() {
 
 
 	if (row_rank == 0) {
-		FillMatrix(A, B);
+		//FillMatrix(A, B);
 		//FillVector(v);
-		Zapis_v_File();
+		//Zapis_v_File();
+		//read_Vector();
 		//read_Vector();
 		read_Matrix();
 		cout << "col ponih = " << popa << " col nepoln = " << pisa << endl;
@@ -235,11 +237,26 @@ int main() {
 	}*/
 	//
 	double  rbufA[m], rbufB[m]; int gsize; int asize; int bsize; double buff[m];
+	int sendcounts[n], displa[n];
 	//MPI_Comm_size(MPI_COMM_WORLD, &gsize);
 	MPI_Bcast(B1, n * m, MPI_DOUBLE, 0, row_comm);
 	MPI_Bcast(A1, n * m, MPI_DOUBLE, 0, row_comm);
 	/*MPI_Bcast(B1, n * m, MPI_DOUBLE, 0, comm_b);
 	MPI_Bcast(A1, n * m, MPI_DOUBLE, 0, comm_b);*/
+	//nmin = n / row_size;
+	//nextra = n % row_size;
+	//int count = 0;
+	//for (int i = 0; i < row_size - 1; i++)
+	//{
+	//	if (i < nextra) {
+	//		sendcounts[i] = nmin + 1;
+	//	}
+	//	else {
+	//		sendcounts[i] = nmin;
+	//	}
+	//	displa[i] = count;
+	//	count += sendcounts[i];
+	//}
 
 	for (int i = 0; i < n - (n % row_size); i++)
 	{
@@ -247,6 +264,8 @@ int main() {
 		//if (i % 2 == 0){
 		//cout << "jopa" <<endl;
 		MPI_Scatter(k, n / row_size, MPI_DOUBLE, rbufA, n / row_size, MPI_DOUBLE, 0, row_comm);
+		//MPI_Scatterv(k, sendcounts, displa, MPI_DOUBLE, rbufA, n / row_size, MPI_DOUBLE, 0, row_comm);
+
 		//}else{
 		//MPI_Scatter(k, 1, MPI_DOUBLE, rbufA, 1, MPI_DOUBLE, 1, comm_b);
 		//}
@@ -255,6 +274,9 @@ int main() {
 			vzat_vector_iz_matrixB(B1, j);
 			//if (i % 2 == 0){
 			MPI_Scatter(l, n / row_size, MPI_DOUBLE, rbufB, n / row_size, MPI_DOUBLE, 0, row_comm);
+			//cout << sendcounts[i] << " " << displa[i] << endl;
+			//MPI_Scatterv(l, sendcounts, displa, MPI_DOUBLE, rbufB, n / row_size, MPI_DOUBLE, 0, row_comm);
+
 			//}else {
 			//MPI_Scatter(l, 1, MPI_DOUBLE, rbufB, 1, MPI_DOUBLE, 1, comm_b);
 			//}
