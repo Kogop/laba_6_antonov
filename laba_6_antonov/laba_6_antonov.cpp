@@ -217,7 +217,7 @@ int main() {
 	//MPI_Barrier(MPI_COMM_WORLD);
 
 
-
+	
 
 	if (row_rank == 0) {
 		//FillMatrix(A, B);
@@ -225,7 +225,11 @@ int main() {
 		//Zapis_v_File();
 		//read_Vector();
 		//read_Vector();
+		//read_Matrix();
+		double readtime0 = MPI_Wtime();
 		read_Matrix();
+		double readtime1 = MPI_Wtime();
+		cout << "read time = " << readtime1 - readtime0 << endl;
 		cout << "col ponih = " << popa << " col nepoln = " << pisa << endl;
 	}
 	/*if (rank == 1) {
@@ -239,8 +243,10 @@ int main() {
 	double  rbufA[m], rbufB[m]; int gsize; int asize; int bsize; double buff[m];
 	int sendcounts[n], displa[n];
 	//MPI_Comm_size(MPI_COMM_WORLD, &gsize);
-	MPI_Bcast(B1, n * m, MPI_DOUBLE, 0, row_comm);
-	MPI_Bcast(A1, n * m, MPI_DOUBLE, 0, row_comm);
+	
+	//MPI_Bcast(B1, n * m, MPI_DOUBLE, 0, row_comm);
+	//MPI_Bcast(A1, n * m, MPI_DOUBLE, 0, row_comm);
+
 	/*MPI_Bcast(B1, n * m, MPI_DOUBLE, 0, comm_b);
 	MPI_Bcast(A1, n * m, MPI_DOUBLE, 0, comm_b);*/
 	//nmin = n / row_size;
@@ -350,9 +356,11 @@ int main() {
 		}
 	}
 	if (row_rank == 0) {
+		double starttimeZ = MPI_Wtime();
 		Zapix_otvetov_v_File(C/*,d*/);
 		endtime = MPI_Wtime();
 		printf("vipolnenie zanyalo %f seconds\n", endtime - starttime);
+		printf("Zapis zanyala %f seconds\n", endtime - starttimeZ);
 	}
 
 
