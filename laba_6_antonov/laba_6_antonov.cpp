@@ -190,9 +190,9 @@ int main() {
 	double starttime, endtime;
 	starttime = MPI_Wtime();
 
-	int rank, ranka, rankb, size, limit, end, end_1_otprav = 0, end_1_priem = 0, h = 0, g = 0;
+	int /*rank, ranka, rankb, size, limit,*/ end, end_1_otprav = 0, end_1_priem = 0, h = 0, g = 0;
 	end = 0;
-	int my_rank_in_first_row, my_rank_in_second_row;
+	/*int my_rank_in_first_row, my_rank_in_second_row;*/
 
 	int world_rank, world_size;
 	MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
@@ -240,8 +240,8 @@ int main() {
 		read_Matrix();
 	}*/
 	//
-	double  rbufA[m], rbufB[m]; int gsize; int asize; int bsize; double buff[m];
-	int sendcounts[n], displa[n];
+	double  rbufA[m], rbufB[m]; /*int gsize; int asize; int bsize;*/ double buff[m];
+	//int sendcounts[n], displa[n];
 	//MPI_Comm_size(MPI_COMM_WORLD, &gsize);
 	
 	//MPI_Bcast(B1, n * m, MPI_DOUBLE, 0, row_comm);
