@@ -5,7 +5,7 @@
 //#include <math.h>
 #include <cmath>
 #include <stdlib.h>
-using namespace std;
+
 
 const int root = 0, tag = 0;
 const int n = 4000, m = 4000;
@@ -55,23 +55,23 @@ void Matrix_Peremnoj_na_vector(double(&AA)[n][m], double(&vv)[n]) {
 
 
 void Zapis_v_File() {
-	ofstream File1("C:/Users/neste/source/Repos/laba_6_antonov/Matrix_1.txt");
+	std::ofstream File1("./Matrix_1.txt");
 	for (int i = 0; i < n; i++)
 	{
 		for (int j = 0; j < m; j++) {
 			File1 << A[i][j] << " ";
 		}
-		File1 << endl;
+		File1 << std:: endl;
 	}
 	File1.close();
 
-	ofstream File2("C:/Users/neste/source/Repos/laba_6_antonov/Matrix_2.txt");
+	std::ofstream File2("./Matrix_2.txt");
 	for (int i = 0; i < m; i++)
 	{
 		for (int j = 0; j < n; j++) {
 			File2 << B[i][j] << " ";
 		}
-		File2 << endl;
+		File2 << std::endl;
 	}
 	File2.close();
 
@@ -84,7 +84,8 @@ void Zapis_v_File() {
 }
 
 void Zapix_otvetov_v_File(double(&CC)[n][n]/*,double(&d)[n]*/) {
-	ofstream File3("C:/Users/neste/source/Repos/laba_6_antonov/Matrix_Otvet1.txt");
+	std::cout << " c zapisannaya --" << std::endl;
+	std::ofstream File3("./Matrix_Otvet1.txt");
 	for (int i = 0; i < n; i++)
 	{
 		for (int j = 0; j < n; j++) {
@@ -93,13 +94,13 @@ void Zapix_otvetov_v_File(double(&CC)[n][n]/*,double(&d)[n]*/) {
 		File3 << "\n";
 	}
 	File3.close();
-	cout << " c zapisannaya --" << endl;
+	
 	//for (int i = 0; i < n; i++)
 	//{
 	//	for (int j = 0; j < n; j++) {
-	//		cout << CC[i][j] << " ";
+	//		std::cout << CC[i][j] << " ";
 	//	}
-	//	cout << endl;
+	//	std::cout << std::endl;
 	//}
 
 	/*ofstream File5("/home/vc/18VF1/laba2-master/laba2_try3/Vector_Otvet1.txt");
@@ -118,9 +119,20 @@ void Zapix_otvetov_v_File(double(&CC)[n][n]/*,double(&d)[n]*/) {
 //	}
 //	File5.close();
 //}
-
-void read_Matrix() {
-	ifstream File1("C:/Users/neste/source/Repos/laba_6_antonov/Matrix_1.txt");
+void read_MatrixB() {
+	std::ifstream File2("./Matrix_2.txt");
+	for (int i = 0; i < m; i++)
+	{
+		for (int j = 0; j < n; j++) {
+			File2 >> B1[i][j];
+			//cout << AA[i][j] << " ";
+		}
+		// cout << endl;
+	}
+	File2.close();
+}
+void read_MatrixA() {
+	std::ifstream File1("./Matrix_1.txt");
 	for (int i = 0; i < n; i++)
 	{
 		for (int j = 0; j < m; j++) {
@@ -131,16 +143,6 @@ void read_Matrix() {
 	}
 	File1.close();
 
-	ifstream File2("C:/Users/neste/source/Repos/laba_6_antonov/Matrix_2.txt");
-	for (int i = 0; i < m; i++)
-	{
-		for (int j = 0; j < n; j++) {
-			File2 >> B1[i][j];
-			//cout << AA[i][j] << " ";
-		}
-		// cout << endl;
-	}
-	File2.close();
 }
 
 double k[m],K[n][m];
@@ -165,6 +167,13 @@ void vzat_minimatrix_iz_matrixA(double(&AA)[n][m], int s1, int s2/* double(&BB)[
 			//cout << k[j] << endl;
 		}
 	}
+	//for (int i = 0; i < n; i++)
+	//{
+	//	for (int j = 0; j < m; j++) {
+	//		std::cout << K[i][j] << " ";
+	//	}
+	//	std::cout << std::endl;
+	//}
 }
 void vzat_minimatrix_iz_matrixB(double(&BB)[n][m], int s1, int s2/* double(&BB)[m][n], int s2,*/) {
 	// if c == 1 znachit berem stroku if c== 2 znachit berem stolbec
@@ -206,15 +215,12 @@ int N = 0, M = 0, Nn = 0, Mm = 0, limit_1 = 0;
 
 
 
-// make matrix multiplying with MPI_Reduce or MPI_AllReduce
+double  rbufA[n][m], rbufB[m][n], /*int gsize; int asize; int bsize;*/  buff[n][n]{};
 int main() {
 	MPI_Init(NULL, NULL);
+	//std::cout << " ya der'mo1" << std::endl;
 	double starttime, endtime;
 	starttime = MPI_Wtime();
-
-	int /*rank, ranka, rankb, size, limit,*/ end, end_1_otprav = 0, end_1_priem = 0, h = 0, g = 0;
-	end = 0;
-	/*int my_rank_in_first_row, my_rank_in_second_row;*/
 
 	int world_rank, world_size;
 	MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
@@ -232,71 +238,104 @@ int main() {
 	MPI_Comm_rank(row_comm, &row_rank);
 	MPI_Comm_size(row_comm, &row_size);
 
-	
-	int nmin = 0, nextra = 0;
-	
-	cout << " ya der'mo" << endl;
-	MPI_Barrier(MPI_COMM_WORLD);
+	//
+	//int nmin = 0, nextra = 0;
+	//
+	//std::cout << " ya der'mo" << std::endl;
+	//MPI_Barrier(MPI_COMM_WORLD);
 
 
-	
+	//
 
+	double readtime0 = MPI_Wtime();
 	if (row_rank == 0) {
 		//FillMatrix(A, B);
 		//FillVector(v);
 		//Zapis_v_File();
 		//read_Vector();
-		
 		//read_Matrix();
-		double readtime0 = MPI_Wtime();
-		read_Matrix();
-		double readtime1 = MPI_Wtime();
-		cout << "read time = " << readtime1 - readtime0 << endl;
-		cout << "col ponih = " << popa << " col nepoln = " << pisa << endl;
+		
+		read_MatrixA();
 	}
+	if (row_rank == 1) {
+		read_MatrixB();
+	}
+	//double readtimer = MPI_Wtime();
+	MPI_Bcast(A1, n * m, MPI_DOUBLE, 0, row_comm);
+	MPI_Bcast(B1, n * m, MPI_DOUBLE, 1, row_comm);
+	//double readtimer1 = MPI_Wtime();
+	//std::cout << "read time A= " << readtimer1 - readtimer << std::endl;
 
-	double  rbufA[n][m], rbufB[m][n]; /*int gsize; int asize; int bsize;*/ double buff[n][n];
-	//int sendcounts[n], displa[n];
-	//MPI_Comm_size(MPI_COMM_WORLD, &gsize);
+	double readtime1 = MPI_Wtime();
+	std::cout << "read time B= " << readtime1 - readtime0 << std::endl;
+	/*double readtime2 = MPI_Wtime();
+	MPI_Bcast(A1, n * m, MPI_DOUBLE, 0, row_comm);
+	double readtime3 = MPI_Wtime();
+	std::cout << "bcast time = " << readtime3 - readtime2 << std::endl;*/
 	
-	//MPI_Bcast(B1, n * m, MPI_DOUBLE, 0, row_comm);
-	//MPI_Bcast(A1, n * m, MPI_DOUBLE, 0, row_comm);
+	////int sendcounts[n], displa[n];
+	////MPI_Comm_size(MPI_COMM_WORLD, &gsize);
+	//
+	////MPI_Bcast(B1, n * m, MPI_DOUBLE, 0, row_comm);
+	////MPI_Bcast(A1, n * m, MPI_DOUBLE, 0, row_comm);
+
+	
 
 
-
-	for (int i = 0; i < n - (n % row_size); i+=row_size)
+	for (int i = 0; i < n - (n % row_size); i += n / row_size)
 	{
 		//vzat_vector_iz_matrixA(A1, i);
 		//if (i % 2 == 0){
 		//cout << "jopa" <<endl;
-		//vzat_minimatrix_iz_matrixA(A1, i, i + row_size - 1);
+		
+		/*if (row_rank == 0)
+		{*/
+			//vzat_minimatrix_iz_matrixA(A1, i, i + n/row_size);
+		//}
+		/*double readtime2 = MPI_Wtime();
+		MPI_Bcast(K, n/row_size * m, MPI_DOUBLE, 0, row_comm);
+		double readtime3 = MPI_Wtime();
+		std::cout <<"rank = "<<row_rank<< " bcast time = " << readtime3 - readtime2 << std::endl;*/
+
 		//MPI_Scatter(K,  row_size, MPI_DOUBLE, rbufA,  row_size, MPI_DOUBLE, 0, row_comm);
 		//MPI_Scatterv(k, sendcounts, displa, MPI_DOUBLE, rbufA, n / row_size, MPI_DOUBLE, 0, row_comm);
+		//MPI_Scatter(A1, n / row_size, MPI_DOUBLE, rbufA, n / row_size, MPI_DOUBLE, 0, row_comm);
 
 		//}else{
-		MPI_Scatter(A1, n/row_size, MPI_DOUBLE, rbufA, n/row_size, MPI_DOUBLE, 0, row_comm);
 		//}
-		for (int j = 0; j < m; j+=world_size)
+		for (int j = 0; j < m; j += m / row_size)
 		{
 			//vzat_vector_iz_matrixB(B1, j);
 			//if (i % 2 == 0){
 			//vzat_minimatrix_iz_matrixB(B1, j, j + row_size - 1);
-			MPI_Scatter(B1,  n/row_size, MPI_DOUBLE, rbufB, n/row_size, MPI_DOUBLE, 0, row_comm);
 			//cout << sendcounts[i] << " " << displa[i] << endl;
 			//MPI_Scatterv(l, sendcounts, displa, MPI_DOUBLE, rbufB, n / row_size, MPI_DOUBLE, 0, row_comm);
+			//MPI_Scatter(B1, n * m  , MPI_DOUBLE, rbufB, n * m , MPI_DOUBLE, 1, row_comm);
+			double readtimer = MPI_Wtime();
 
+			for (int ii = row_rank * (n / row_size); ii < (row_rank + 1) * (n / row_size); ii++) {
+				for (int jj = row_rank * (n / row_size); jj < (row_rank + 1) * (n / row_size); jj++) {
+					//CC[i][j] = 0;
+					for (int kk = 0; kk < m; kk++) {
+						Temp[i + ii][j + jj] += A1[i+ii][kk] * B1[kk][j+jj];
+
+					}//if (row_rank == 1)std::cout << Temp[i + ii][j + jj];
+				}//if (row_rank == 1)std::cout<<std::endl;
+			}
+			double readtimer1 = MPI_Wtime();
+			std::cout << "count time = " << readtimer1 - readtimer <<" rank = "<< row_rank<<" quad #"<< i+j<< std::endl;
 			//}else {
 			//MPI_Scatter(l, 1, MPI_DOUBLE, rbufB, 1, MPI_DOUBLE, 1, comm_b);
 			//}
 			//Matrix_Peremnoj(K, rbufB, Temp);
-			for (int ii = 0; ii < row_size; ii++) {
-				for (int jj = 0; jj < n/row_size; jj++) {
-					//CC[i][j] = 0;
-					for (int kk = 0; kk < m; kk++) {
-						Temp[ii][jj] += K[ii][kk] * rbufB[kk][jj];
-					}
-				}
-			}
+			//for (int ii = row_rank * n / row_size; ii < (row_rank + 1) * n / row_size; ii++) {
+			//	for (int jj = row_rank * n / row_size; jj < (row_rank + 1) * n / row_size; jj++) {
+			//		//CC[i][j] = 0;
+			//		for (int kk = 0; kk < m; kk++) {
+			//			Temp[i + ii][j + jj] += A1[i+ii][j+kk] * rbufB[kk][jj];
+			//		}
+			//	}
+			//}
 			/*for (int i = 0; i < n / row_size; i++)
 			{
 				Temp[i] = rbufA[i] * rbufB[i];
@@ -305,7 +344,9 @@ int main() {
 			//cout << rbufA[0] << " " << rbufB[0] << " " << rank << endl;
 			//if (i % 2 == 0){
 			//MPI_Reduce(Temp, buff, n / row_size, MPI_DOUBLE, MPI_SUM, 0, row_comm);
-			MPI_Gather(Temp, row_size, MPI_DOUBLE, &buff[i][j], row_size, MPI_DOUBLE, 0, row_comm);
+			// 
+			MPI_Gather(&Temp[i][j], n * m / row_size/row_size, MPI_DOUBLE, &buff[i][j], n * m / row_size/row_size, MPI_DOUBLE, 0, row_comm);
+			// 
 			//}else{
 			//MPI_Reduce(Temp, buff, 1, MPI_DOUBLE, MPI_SUM, 1, comm_b);
 			//}
@@ -323,31 +364,34 @@ int main() {
 			fflush(stdout);
 		}
 	}
-	if (n % row_size > 0) {
-		for (int i = 0; i < n - (n % row_size); i += row_size)
-		{
-			vzat_minimatrix_iz_matrixA(A1, i, i + row_size - 1);
-			for (int j = 0; j < m; j += world_size)
-			{
-				vzat_minimatrix_iz_matrixB(B1, j, j + row_size - 1);
-				MPI_Scatter(L, row_size, MPI_DOUBLE, rbufB, row_size, MPI_DOUBLE, 0, row_comm);
-				Matrix_Peremnoj(K, rbufB, Temp);
-				MPI_Gather(Temp, row_size, MPI_DOUBLE, &buff[i][j], row_size, MPI_DOUBLE, 0, row_comm);
-				fflush(stdout);
-			}
-		}
-	}
+	//if (n % row_size > 0) {
+	//	for (int i = 0; i < n - (n % row_size); i += row_size)
+	//	{
+	//		vzat_minimatrix_iz_matrixA(A1, i, i + row_size - 1);
+	//		for (int j = 0; j < m; j += world_size)
+	//		{
+	//			vzat_minimatrix_iz_matrixB(B1, j, j + row_size - 1);
+	//			MPI_Scatter(L, row_size, MPI_DOUBLE, rbufB, row_size, MPI_DOUBLE, 0, row_comm);
+	//			Matrix_Peremnoj(K, rbufB, Temp);
+	//			MPI_Gather(Temp, row_size, MPI_DOUBLE, &buff[i][j], row_size, MPI_DOUBLE, 0, row_comm);
+	//			fflush(stdout);
+	//		}
+	//	}
+	//}
+	MPI_Barrier(row_comm);
 	if (row_rank == 0) {
+
+		
 		double starttimeZ = MPI_Wtime();
-		Zapix_otvetov_v_File(buff/*,d*/);
+		Zapix_otvetov_v_File(buff/* buff, d */ );
 		endtime = MPI_Wtime();
 		printf("vipolnenie zanyalo %f seconds\n", endtime - starttime);
 		printf("Zapis zanyala %f seconds\n", endtime - starttimeZ);
 	}
-
+	MPI_Barrier(row_comm);
 
 	MPI_Comm_free(&row_comm);
 	MPI_Finalize();
-	//MPI_Finalize();
+	////MPI_Finalize();
 	return 1;
-};
+}
