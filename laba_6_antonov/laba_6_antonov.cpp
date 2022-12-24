@@ -282,29 +282,29 @@ int main() {
 	
 
 
-	for (int i = 0; i < n - (n % row_size); i += n / row_size)
-	{
-		//vzat_vector_iz_matrixA(A1, i);
-		//if (i % 2 == 0){
-		//cout << "jopa" <<endl;
-		
-		/*if (row_rank == 0)
-		{*/
-			//vzat_minimatrix_iz_matrixA(A1, i, i + n/row_size);
-		//}
-		/*double readtime2 = MPI_Wtime();
-		MPI_Bcast(K, n/row_size * m, MPI_DOUBLE, 0, row_comm);
-		double readtime3 = MPI_Wtime();
-		std::cout <<"rank = "<<row_rank<< " bcast time = " << readtime3 - readtime2 << std::endl;*/
+	//for (int i = 0; i < n - (n % row_size); i += n / row_size)
+	//{
+	//	//vzat_vector_iz_matrixA(A1, i);
+	//	//if (i % 2 == 0){
+	//	//cout << "jopa" <<endl;
+	//	
+	//	/*if (row_rank == 0)
+	//	{*/
+	//		//vzat_minimatrix_iz_matrixA(A1, i, i + n/row_size);
+	//	//}
+	//	/*double readtime2 = MPI_Wtime();
+	//	MPI_Bcast(K, n/row_size * m, MPI_DOUBLE, 0, row_comm);
+	//	double readtime3 = MPI_Wtime();
+	//	std::cout <<"rank = "<<row_rank<< " bcast time = " << readtime3 - readtime2 << std::endl;*/
 
-		//MPI_Scatter(K,  row_size, MPI_DOUBLE, rbufA,  row_size, MPI_DOUBLE, 0, row_comm);
-		//MPI_Scatterv(k, sendcounts, displa, MPI_DOUBLE, rbufA, n / row_size, MPI_DOUBLE, 0, row_comm);
-		//MPI_Scatter(A1, n / row_size, MPI_DOUBLE, rbufA, n / row_size, MPI_DOUBLE, 0, row_comm);
+	//	//MPI_Scatter(K,  row_size, MPI_DOUBLE, rbufA,  row_size, MPI_DOUBLE, 0, row_comm);
+	//	//MPI_Scatterv(k, sendcounts, displa, MPI_DOUBLE, rbufA, n / row_size, MPI_DOUBLE, 0, row_comm);
+	//	//MPI_Scatter(A1, n / row_size, MPI_DOUBLE, rbufA, n / row_size, MPI_DOUBLE, 0, row_comm);
 
-		//}else{
-		//}
-		for (int j = 0; j < m; j += m / row_size)
-		{
+	//	//}else{
+	//	//}
+	//	for (int j = 0; j < m; j += m / row_size)
+	//	{
 			//vzat_vector_iz_matrixB(B1, j);
 			//if (i % 2 == 0){
 			//vzat_minimatrix_iz_matrixB(B1, j, j + row_size - 1);
@@ -313,17 +313,17 @@ int main() {
 			//MPI_Scatter(B1, n * m  , MPI_DOUBLE, rbufB, n * m , MPI_DOUBLE, 1, row_comm);
 			double readtimer = MPI_Wtime();
 
-			for (int ii = row_rank * (n / row_size); ii < (row_rank + 1) * (n / row_size); ii++) {
+			for (int ii = 0; ii < n; ii++) {
 				for (int jj = row_rank * (n / row_size); jj < (row_rank + 1) * (n / row_size); jj++) {
 					//CC[i][j] = 0;
 					for (int kk = 0; kk < m; kk++) {
-						Temp[i + ii][j + jj] += A1[i+ii][kk] * B1[kk][j+jj];
+						Temp[ii][jj] += A1[ii][kk] * B1[kk][jj];
 
 					}//if (row_rank == 1)std::cout << Temp[i + ii][j + jj];
 				}//if (row_rank == 1)std::cout<<std::endl;
 			}
 			double readtimer1 = MPI_Wtime();
-			std::cout << "count time = " << readtimer1 - readtimer <<" rank = "<< row_rank<<" quad #"<< i+j<< std::endl;
+			std::cout << "count time = " << readtimer1 - readtimer <<" rank = "<< row_rank<<" quad #"<< std::endl;
 			//}else {
 			//MPI_Scatter(l, 1, MPI_DOUBLE, rbufB, 1, MPI_DOUBLE, 1, comm_b);
 			//}
@@ -343,9 +343,9 @@ int main() {
 			//Temp[0] = rbufA[0] * rbufB[0];
 			//cout << rbufA[0] << " " << rbufB[0] << " " << rank << endl;
 			//if (i % 2 == 0){
-			//MPI_Reduce(Temp, buff, n / row_size, MPI_DOUBLE, MPI_SUM, 0, row_comm);
+			MPI_Reduce(Temp, buff, n*m /*/ row_size*/, MPI_DOUBLE, MPI_SUM, 0, row_comm);
 			// 
-			MPI_Gather(&Temp[i][j], n * m / row_size/row_size, MPI_DOUBLE, &buff[i][j], n * m / row_size/row_size, MPI_DOUBLE, 0, row_comm);
+			//MPI_Gather(&Temp[ii][j], n * m / row_size/row_size, MPI_DOUBLE, &buff[i][j], n * m / row_size/row_size, MPI_DOUBLE, 0, row_comm);
 			// 
 			//}else{
 			//MPI_Reduce(Temp, buff, 1, MPI_DOUBLE, MPI_SUM, 1, comm_b);
@@ -362,8 +362,8 @@ int main() {
 			//}
 
 			fflush(stdout);
-		}
-	}
+	/*	}
+	}*/
 	//if (n % row_size > 0) {
 	//	for (int i = 0; i < n - (n % row_size); i += row_size)
 	//	{
